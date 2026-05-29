@@ -148,33 +148,83 @@ def nivel4_enigma():
     # ====================
     # ACERTIJO 3: ROMPECABEZAS FINAL
     # ====================
+        # ====================
+    # ACERTIJO 3: ROMPECABEZAS FINAL
+    # ====================
     if not st.session_state.acertijos_resueltos['rompecabezas_final']:
         with st.expander("🧩 ACERTIJO 3: EL ROMPECABEZAS FINAL", expanded=False):
-            st.markdown("""
+            
+            # Palabra a adivinar y sus letras desordenadas aleatoriamente
+            palabra_correcta = "ORGANIZAR"
+            
+            # Inicializar letras desordenadas si no existen
+            if 'letras_desordenadas' not in st.session_state:
+                letras = list(palabra_correcta)
+                random.shuffle(letras)
+                # Asegurarse de que no quede igual que la original
+                while ''.join(letras) == palabra_correcta:
+                    random.shuffle(letras)
+                st.session_state.letras_desordenadas = letras
+            
+            # Mostrar las letras desordenadas como tarjetas visuales
+            st.markdown(f"""
             <div style="background: rgba(168, 85, 247, 0.1); padding: 20px; border-radius: 10px; margin: 10px 0;">
                 <h4 style="color: #a855f7; font-family: 'Rajdhani', sans-serif;">
                     🎯 Ordena las letras para descubrir la función principal de los metadatos
                 </h4>
-                <p style="color: #ccd6f6; font-size: 1.2rem; text-align: center; letter-spacing: 5px;">
-                    O R G A N I Z A R
-                </p>
-                <p style="color: #8892b0; font-size: 0.9rem;">
-                    Pista: Es lo que hacemos con libros en una biblioteca.
+                <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
+            """, unsafe_allow_html=True)
+            
+            # Mostrar cada letra en una tarjeta
+            for letra in st.session_state.letras_desordenadas:
+                st.markdown(f"""
+                    <div style="background: rgba(168, 85, 247, 0.2); 
+                                border: 2px solid #a855f7; 
+                                border-radius: 10px; 
+                                padding: 15px 20px; 
+                                font-family: 'Orbitron', sans-serif;
+                                font-size: 1.8rem;
+                                color: #a855f7;
+                                font-weight: 700;
+                                display: inline-block;
+                                min-width: 50px;
+                                text-align: center;">
+                        {letra}
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("""
+                </div>
+                <p style="color: #8892b0; font-size: 0.9rem; text-align: center;">
+                    💡 Pista: Es lo que hacemos con los libros en una biblioteca para encontrarlos fácilmente.
                 </p>
             </div>
             """, unsafe_allow_html=True)
             
-            respuesta = st.text_input("Escribe la palabra ordenada:", key="acertijo3", placeholder="________").lower().strip()
+            respuesta = st.text_input(
+                "Escribe la palabra ordenada:", 
+                key="acertijo3", 
+                placeholder="Escribe aquí la palabra...",
+                help="Mira las letras desordenadas y escribe la palabra correcta"
+            ).upper().strip()
             
-            if st.button("🧩 VERIFICAR ROMPECABEZAS", key="verificar_acertijo3", use_container_width=True):
-                if respuesta == "organizar":
-                    st.session_state.acertijos_resueltos['rompecabezas_final'] = True
-                    st.session_state.codigos_obtenidos.append("🧩")
-                    st.success("✅ ¡Correcto! Los metadatos nos ayudan a ORGANIZAR la información.")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error("❌ Las letras forman una palabra relacionada con ordenar cosas.")
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col2:
+                if st.button("🧩 VERIFICAR ROMPECABEZAS", key="verificar_acertijo3", use_container_width=True):
+                    if respuesta == palabra_correcta:
+                        st.session_state.acertijos_resueltos['rompecabezas_final'] = True
+                        st.session_state.codigos_obtenidos.append("🧩")
+                        # Limpiar letras para cuando se reinicie
+                        if 'letras_desordenadas' in st.session_state:
+                            del st.session_state.letras_desordenadas
+                        st.success("✅ ¡Correcto! Los metadatos nos ayudan a ORGANIZAR la información.")
+                        time.sleep(1)
+                        st.rerun()
+                    elif respuesta == "":
+                        st.error("❌ Debes escribir una palabra.")
+                    else:
+                        st.error(f"❌ '{respuesta}' no es correcto. Las letras mostradas forman una palabra relacionada con ordenar cosas.")
+                        st.info("💡 Pista adicional: Cuando organizas algo, lo pones en su lugar para encontrarlo después.")
     else:
         st.markdown("""
         <div style="background: rgba(0, 255, 136, 0.1); border: 2px solid #00ff88; 
